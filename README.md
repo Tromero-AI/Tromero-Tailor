@@ -1,14 +1,17 @@
-# Tromero Closed AI
+# Tromero Tailor AI
 
 ## Installation
 
-To install Tromero Closed AI, you can use pip.
+To install Tromero Tailor AI, you can use pip.
 
 ```
 pip install tromero_tailor
 ```
 
 ## Getting Started
+
+Ensure you have set up both your OpenAi key and your Tromero key. You can follow the instructions on our site to create a Tromero key
+
 ### Importing the Package
 
 First, import the TailorAI class from the AITailor package:
