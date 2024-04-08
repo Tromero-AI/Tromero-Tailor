@@ -1,0 +1,185 @@
+[
+    [
+        {
+            "role": "user",
+            "content": "Please summarize the following email chain:\n\nEmail: Subject: Project Update\nDear Team, The project is moving ahead as planned. We're currently in the design phase and expect to start development next week. Regards, Alice\n\nEmail: Subject: RE: Project Update\nHi Alice, That's great news! Please make sure to update the project timeline accordingly. Best, Bob\n\nEmail: Subject: RE: RE: Project Update\nWill do, Bob. I'll send the updated timeline by end of day. Cheers, Alice\n\n"
+        },
+        {
+            "content": "The email chain discusses the progress of a project currently in the design phase, with development expected to start the following week. Bob asked Alice to update the project timeline accordingly, to which Alice agreed to send the updated timeline by the end of the day.",
+            "role": "assistant",
+            "function_call": null,
+            "tool_calls": null
+        }
+    ],
+    {
+        "messages": [
+            {
+                "role": "user",
+                "content": "Please summarize the following email chain:\n\nEmail: Subject: Project Update\nDear Team, The project is moving ahead as planned. We're currently in the design phase and expect to start development next week. Regards, Alice\n\nEmail: Subject: RE: Project Update\nHi Alice, That's great news! Please make sure to update the project timeline accordingly. Best, Bob\n\nEmail: Subject: RE: RE: Project Update\nWill do, Bob. I'll send the updated timeline by end of day. Cheers, Alice\n\n"
+            },
+            {
+                "content": "The email chain discusses the progress of a project that is currently in the design phase, with development expected to start the following week. Bob requests Alice to update the project timeline to reflect this progress, and Alice agrees to send the updated timeline by the end of the day.",
+                "role": "assistant",
+                "function_call": null,
+                "tool_calls": null
+            }
+        ],
+        "model": "gpt-4-turbo-preview",
+        "kwargs": {
+            "model": "gpt-4-turbo-preview",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "Please summarize the following email chain:\n\nEmail: Subject: Project Update\nDear Team, The project is moving ahead as planned. We're currently in the design phase and expect to start development next week. Regards, Alice\n\nEmail: Subject: RE: Project Update\nHi Alice, That's great news! Please make sure to update the project timeline accordingly. Best, Bob\n\nEmail: Subject: RE: RE: Project Update\nWill do, Bob. I'll send the updated timeline by end of day. Cheers, Alice\n\n"
+                }
+            ]
+        },
+        "creation_time": "2024-04-08T14:34:34.710912"
+    },
+    {
+        "messages": [
+            {
+                "role": "user",
+                "content": "Please summarize the following email chain:\n\nEmail: Subject: Project Update\nDear Team, The project is moving ahead as planned. We're currently in the design phase and expect to start development next week. Regards, Alice\n\nEmail: Subject: RE: Project Update\nHi Alice, That's great news! Please make sure to update the project timeline accordingly. Best, Bob\n\nEmail: Subject: RE: RE: Project Update\nWill do, Bob. I'll send the updated timeline by end of day. Cheers, Alice\n\n"
+            },
+            {
+                "content": "Alice informed the team that the project is progressing according to plan, currently in the design phase, with development set to begin next week. Bob responded, requesting an updated project timeline, to which Alice agreed to provide by the end of the day.",
+                "role": "assistant",
+                "function_call": null,
+                "tool_calls": null
+            }
+        ],
+        "model": "gpt-4-turbo-preview",
+        "kwargs": {
+            "model": "gpt-4-turbo-preview",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "Please summarize the following email chain:\n\nEmail: Subject: Project Update\nDear Team, The project is moving ahead as planned. We're currently in the design phase and expect to start development next week. Regards, Alice\n\nEmail: Subject: RE: Project Update\nHi Alice, That's great news! Please make sure to update the project timeline accordingly. Best, Bob\n\nEmail: Subject: RE: RE: Project Update\nWill do, Bob. I'll send the updated timeline by end of day. Cheers, Alice\n\n"
+                }
+            ]
+        },
+        "creation_time": "2024-04-08T14:37:49.683947"
+    },
+    {
+        "messages": [
+            {
+                "role": "user",
+                "content": "Please summarize the following email chain:\n\nEmail: Subject: Project Update\nDear Team, The project is moving ahead as planned. We're currently in the design phase and expect to start development next week. Regards, Alice\n\nEmail: Subject: RE: Project Update\nHi Alice, That's great news! Please make sure to update the project timeline accordingly. Best, Bob\n\nEmail: Subject: RE: RE: Project Update\nWill do, Bob. I'll send the updated timeline by end of day. Cheers, Alice\n\n"
+            },
+            {
+                "content": "Alice informed the team that the project is progressing as planned, currently in the design phase with development expected to start next week. Bob responded, asking Alice to update the project timeline accordingly. Alice confirmed she would send the updated timeline by the end of the day.",
+                "role": "assistant",
+                "function_call": null,
+                "tool_calls": null
+            }
+        ],
+        "model": "gpt-4-turbo-preview",
+        "kwargs": {
+            "model": "gpt-4-turbo-preview",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "Please summarize the following email chain:\n\nEmail: Subject: Project Update\nDear Team, The project is moving ahead as planned. We're currently in the design phase and expect to start development next week. Regards, Alice\n\nEmail: Subject: RE: Project Update\nHi Alice, That's great news! Please make sure to update the project timeline accordingly. Best, Bob\n\nEmail: Subject: RE: RE: Project Update\nWill do, Bob. I'll send the updated timeline by end of day. Cheers, Alice\n\n"
+                }
+            ],
+            "temperature": 0.5
+        },
+        "creation_time": "2024-04-08T14:38:08.162687"
+    },
+    {
+        "messages": [
+            {
+                "role": "user",
+                "content": "Please summarize the following email chain:\n\nEmail: Subject: Project Update\nDear Team, The project is moving ahead as planned. We're currently in the design phase and expect to start development next week. Regards, Alice\n\nEmail: Subject: RE: Project Update\nHi Alice, That's great news! Please make sure to update the project timeline accordingly. Best, Bob\n\nEmail: Subject: RE: RE: Project Update\nWill do, Bob. I'll send the updated timeline by end of day. Cheers, Alice\n\n"
+            },
+            {
+                "content": "Alice informed the team that the project is progressing as planned, currently in the design phase with development expected to start the following week. Bob responded, requesting an updated project timeline. Alice agreed to send the updated timeline by the end of the day.",
+                "role": "assistant",
+                "function_call": null,
+                "tool_calls": null
+            }
+        ],
+        "model": "gpt-4-turbo-preview",
+        "kwargs": {
+            "temperature": 0.5
+        },
+        "creation_time": "2024-04-08T14:38:29.774487"
+    },
+    {
+        "messages": [
+            {
+                "role": "user",
+                "content": "Please summarize the following email chain:\n\nEmail: Subject: Project Update\nDear Team, The project is moving ahead as planned. We're currently in the design phase and expect to start development next week. Regards, Alice\n\nEmail: Subject: RE: Project Update\nHi Alice, That's great news! Please make sure to update the project timeline accordingly. Best, Bob\n\nEmail: Subject: RE: RE: Project Update\nWill do, Bob. I'll send the updated timeline by end of day. Cheers, Alice\n\n"
+            },
+            {
+                "content": "Alice informed the team that the project is progressing as planned, currently in the design phase with development expected to start next week. Bob responded, requesting an updated project timeline. Alice confirmed she would send the updated timeline by the end of the day.",
+                "role": "assistant",
+                "function_call": null,
+                "tool_calls": null
+            }
+        ],
+        "model": "gpt-4-turbo-preview",
+        "kwargs": {
+            "temperature": 0.5
+        },
+        "creation_time": "2024-04-08T14:59:01.508128"
+    },
+    {
+        "messages": [
+            {
+                "role": "user",
+                "content": "Please summarize the following email chain:\n\nEmail: Subject: Project Update\nDear Team, The project is moving ahead as planned. We're currently in the design phase and expect to start development next week. Regards, Alice\n\nEmail: Subject: RE: Project Update\nHi Alice, That's great news! Please make sure to update the project timeline accordingly. Best, Bob\n\nEmail: Subject: RE: RE: Project Update\nWill do, Bob. I'll send the updated timeline by end of day. Cheers, Alice\n\n"
+            },
+            {
+                "content": "The email chain discusses the progress of a project that is currently in the design phase and expected to move to the development phase next week. Bob requests Alice to update the project timeline accordingly, to which Alice agrees to send the updated timeline by the end of the day.",
+                "role": "assistant",
+                "function_call": null,
+                "tool_calls": null
+            }
+        ],
+        "model": "gpt-4-turbo-preview",
+        "kwargs": {
+            "temperature": 0.5
+        },
+        "creation_time": "2024-04-08T15:02:57.687059"
+    },
+    {
+        "messages": [
+            {
+                "role": "user",
+                "content": "Please summarize the following email chain:\n\nEmail: Subject: Project Update\nDear Team, The project is moving ahead as planned. We're currently in the design phase and expect to start development next week. Regards, Alice\n\nEmail: Subject: RE: Project Update\nHi Alice, That's great news! Please make sure to update the project timeline accordingly. Best, Bob\n\nEmail: Subject: RE: RE: Project Update\nWill do, Bob. I'll send the updated timeline by end of day. Cheers, Alice\n\n"
+            },
+            {
+                "content": "Alice informed the team that the project is progressing as planned, currently in the design phase, with development expected to start next week. Bob responded, requesting an update to the project timeline. Alice confirmed she would send the updated timeline by the end of the day.",
+                "role": "assistant",
+                "function_call": null,
+                "tool_calls": null
+            }
+        ],
+        "model": "gpt-4-turbo-preview",
+        "kwargs": {
+            "temperature": 0.5
+        },
+        "creation_time": "2024-04-08T15:07:27.484768"
+    },
+    {
+        "messages": [
+            {
+                "role": "user",
+                "content": "Please summarize the following email chain:\n\nEmail: Subject: Project Update\nDear Team, The project is moving ahead as planned. We're currently in the design phase and expect to start development next week. Regards, Alice\n\nEmail: Subject: RE: Project Update\nHi Alice, That's great news! Please make sure to update the project timeline accordingly. Best, Bob\n\nEmail: Subject: RE: RE: Project Update\nWill do, Bob. I'll send the updated timeline by end of day. Cheers, Alice\n\n"
+            },
+            {
+                "content": "Alice informed the team that the project is progressing as planned, currently in the design phase with development expected to start the following week. Bob responded, requesting an updated project timeline. Alice confirmed she would send the updated timeline by the end of the day.",
+                "role": "assistant",
+                "function_call": null,
+                "tool_calls": null
+            }
+        ],
+        "model": "gpt-4-turbo-preview",
+        "kwargs": {
+            "temperature": 0.5
+        },
+        "creation_time": "2024-04-08T15:07:49.020371"
+    }
+]
