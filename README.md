@@ -5,24 +5,24 @@
 To install Tromero Closed AI, you can use pip.
 
 ```
-pip install tromero
+pip install tromero_tailor
 ```
 
 ## Getting Started
 ### Importing the Package
 
-First, import the ClosedAi class from the AITailor package:
+First, import the TailorAI class from the AITailor package:
 
 ```
-from tromero import ClosedAI
+from tromero import TailorAI
 ```
 
 ### Initializing the Client
 
-Initialize the ClosedAi client using your API keys, which should be stored securely and preferably as environment variables:
+Initialize the TailorAI client using your API keys, which should be stored securely and preferably as environment variables:
 
 ```
-client = ClosedAi(api_key="your-openai-key", tromero_key="your-tromero-key")
+client = TailorAI(api_key="your-openai-key", tromero_key="your-tromero-key")
 ```
 
 ### Usage
