@@ -6,10 +6,8 @@ from openai.resources.chat.completions import (
 )
 from openai._compat import cached_property
 import datetime
-from .uploader import post_data
+from .tromero_requests import post_data, tromero_model_create
 
-
-url = "https://api.example.com/data"
 
 class MockCompletions(Completions):
     def __init__(self, client, log_file):
@@ -30,7 +28,7 @@ class MockCompletions(Completions):
         }
     
     def _save_data(self, data):
-        post_data(url, data, self._client.tromero_key)
+        post_data(data, self._client.tromero_key)
         with open(self.log_file, 'r+') as f:
             log_data = json.load(f)
             log_data.append(data)
@@ -46,12 +44,10 @@ class MockCompletions(Completions):
         input = {"model": kwargs['model'], "messages": kwargs['messages']}
         formatted_kwargs = {k: v for k, v in kwargs.items() if k not in ['model', 'messages']}
         if self.check_model(kwargs['model']):
-            res = Completions.create(self, *args, **kwargs)
-            
+            res = Completions.create(self, *args, **kwargs)  
         else:
-            # Use tromero model
-            res = {"error": "Model not found. Using tromero model instead."}
-            return res
+            res = tromero_model_create(kwargs['model'], kwargs['messages'], self._client.tromero_key)
+            print(res)
 
         if hasattr(res, 'choices'):
             for choice in res.choices:
