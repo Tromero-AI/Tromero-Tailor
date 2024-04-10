@@ -1,19 +1,18 @@
 import requests
 
-data_url = "https://api.example.com/data"
+data_url = "https://stagingenv-414416.lm.r.appspot.com/tailor/v1/data"
 models_url = "http://87.120.209.240:5000/generate"
 
 def post_data(data, auth_token):
-    print(f"Posting data to {data_url}")
-    print(f"Data: {data}")
-    print(f"Auth Token: {auth_token}")
+    print(auth_token)
     headers = {
-        'Authorization': f'Bearer {auth_token}',
+        'X-API-KEY': auth_token,
         'Content-Type': 'application/json'
     }
     
     try:
         response = requests.post(data_url, json=data, headers=headers)
+        print(response.json())
         response.raise_for_status()  # Raises HTTPError for bad responses (4XX, 5XX)
         return response.json()  # Return the JSON response if request was successful
     except Exception as e:
@@ -27,11 +26,12 @@ def tromero_model_create(model, messages, tromero_key):
 
     data = {
         "adapter_name": model,
-        "inputs": messages,
+        "messages": messages,
     }
 
     try:
         response = requests.post(models_url, json=data, headers=headers)
+        print(response.json())
         response.raise_for_status()  # Raises HTTPError for bad responses (4XX, 5XX)
         return response.json()  # Return the JSON response if request was successful
     except Exception as e:

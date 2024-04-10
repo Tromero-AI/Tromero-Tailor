@@ -28,6 +28,13 @@ class MockCompletions(Completions):
         }
     
     def _save_data(self, data):
+        for message in data["messages"]:
+            if message["role"] == "user":
+                message["role"] = "human"
+            elif message["role"] == "assistant":
+                message["role"] = "gpt"
+            message["value"] = message.pop("content")
+
         post_data(data, self._client.tromero_key)
         with open(self.log_file, 'r+') as f:
             log_data = json.load(f)
@@ -47,7 +54,6 @@ class MockCompletions(Completions):
             res = Completions.create(self, *args, **kwargs)  
         else:
             res = tromero_model_create(kwargs['model'], kwargs['messages'], self._client.tromero_key)
-            print(res)
 
         if hasattr(res, 'choices'):
             for choice in res.choices:
@@ -67,7 +73,6 @@ class MockChat(Chat):
 
     @cached_property
     def completions(self) -> Completions:
-        print("here")
         return MockCompletions(self._client, self.log_file)
 
 
