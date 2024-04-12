@@ -7,7 +7,17 @@ from openai.resources.chat.completions import (
 from openai._compat import cached_property
 import datetime
 from .tromero_requests import post_data, tromero_model_create
+from .tromero_utils import mock_openai_format
 
+def tromero_format_message(messages):
+    for message in messages:
+        if message["role"] == "user":
+            message["role"] = "human"
+        elif message["role"] == "assistant":
+            message["role"] = "gpt"
+        message["value"] = message.pop("content")
+    return messages
+    
 
 class MockCompletions(Completions):
     def __init__(self, client, log_file):
@@ -28,12 +38,7 @@ class MockCompletions(Completions):
         }
     
     def _save_data(self, data):
-        for message in data["messages"]:
-            if message["role"] == "user":
-                message["role"] = "human"
-            elif message["role"] == "assistant":
-                message["role"] = "gpt"
-            message["value"] = message.pop("content")
+        data['messages'] = tromero_format_message(data['messages'])
 
         post_data(data, self._client.tromero_key)
         with open(self.log_file, 'r+') as f:
@@ -51,18 +56,22 @@ class MockCompletions(Completions):
         input = {"model": kwargs['model'], "messages": kwargs['messages']}
         formatted_kwargs = {k: v for k, v in kwargs.items() if k not in ['model', 'messages']}
         if self.check_model(kwargs['model']):
-            res = Completions.create(self, *args, **kwargs)  
-        else:
-            res = tromero_model_create(kwargs['model'], kwargs['messages'], self._client.tromero_key)
+            res = Completions.create(self, *args, **kwargs) 
 
-        if hasattr(res, 'choices'):
-            for choice in res.choices:
-                formatted_choice = self._choice_to_dict(choice)
-                self._save_data({"messages": input['messages'] + [formatted_choice['message']],
-                                   "model": input['model'],
-                                   "kwargs": formatted_kwargs,
-                                   "creation_time": str(datetime.datetime.now().isoformat()),
-                                    })
+            if hasattr(res, 'choices'):
+                for choice in res.choices:
+                    formatted_choice = self._choice_to_dict(choice)
+                    self._save_data({"messages": input['messages'] + [formatted_choice['message']],
+                                    "model": input['model'],
+                                    "kwargs": formatted_kwargs,
+                                    "creation_time": str(datetime.datetime.now().isoformat()),
+                                        })
+        else:
+            messages = kwargs['messages']
+            res = tromero_model_create(kwargs['model'], messages, self._client.tromero_key)
+            # check if res has field 'generated_text'
+            if 'generated_text' in res:
+                res = mock_openai_format(res['generated_text'])
         return res
 
 

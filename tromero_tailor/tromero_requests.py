@@ -28,10 +28,8 @@ def tromero_model_create(model, messages, tromero_key):
         "adapter_name": model,
         "messages": messages,
     }
-
     try:
         response = requests.post(models_url, json=data, headers=headers)
-        print(response.json())
         response.raise_for_status()  # Raises HTTPError for bad responses (4XX, 5XX)
         return response.json()  # Return the JSON response if request was successful
     except Exception as e:
