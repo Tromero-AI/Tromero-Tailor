@@ -9,20 +9,11 @@ import datetime
 from .tromero_requests import post_data, tromero_model_create
 from .tromero_utils import mock_openai_format
 
-def tromero_format_message(messages):
-    for message in messages:
-        if message["role"] == "user":
-            message["role"] = "human"
-        elif message["role"] == "assistant":
-            message["role"] = "gpt"
-        message["value"] = message.pop("content")
-    return messages
     
 
 class MockCompletions(Completions):
-    def __init__(self, client, log_file):
+    def __init__(self, client):
         super().__init__(client)
-        self.log_file = log_file
 
     def _choice_to_dict(self, choice):
         return {
@@ -32,20 +23,11 @@ class MockCompletions(Completions):
             "message": {
                 "content": choice.message.content,
                 "role": choice.message.role,
-                "function_call": choice.message.function_call,
-                "tool_calls": choice.message.tool_calls
             }
         }
     
     def _save_data(self, data):
-        data['messages'] = tromero_format_message(data['messages'])
-
         post_data(data, self._client.tromero_key)
-        with open(self.log_file, 'r+') as f:
-            log_data = json.load(f)
-            log_data.append(data)
-            f.seek(0)  # Move to the beginning of the file before writing
-            json.dump(log_data, f, indent=4)
 
     def check_model(self, model):
         models = self._client.models.list()
@@ -56,15 +38,16 @@ class MockCompletions(Completions):
         input = {"model": kwargs['model'], "messages": kwargs['messages']}
         formatted_kwargs = {k: v for k, v in kwargs.items() if k not in ['model', 'messages']}
         if self.check_model(kwargs['model']):
-            res = Completions.create(self, *args, **kwargs) 
-
+            res = Completions.create(self, *args, **kwargs)  
             if hasattr(res, 'choices'):
+                usage = res.usage.model_dump()
                 for choice in res.choices:
                     formatted_choice = self._choice_to_dict(choice)
                     self._save_data({"messages": input['messages'] + [formatted_choice['message']],
                                     "model": input['model'],
                                     "kwargs": formatted_kwargs,
                                     "creation_time": str(datetime.datetime.now().isoformat()),
+                                    "usage": usage,
                                         })
         else:
             messages = kwargs['messages']
@@ -87,19 +70,8 @@ class MockChat(Chat):
 
 class TailorAI(OpenAI):
     chat: MockChat
-    def __init__(self, api_key, tromero_key, log_file='openai_interactions.json'):
+    def __init__(self, api_key, tromero_key):
         super().__init__(api_key=api_key)
-        self.log_file = log_file
-        self._ensure_log_file()
         self.current_prompt = []
-        self.chat = MockChat(self, log_file)
+        self.chat = MockChat(self)
         self.tromero_key = tromero_key
-
-    def _ensure_log_file(self):
-        try:
-            with open(self.log_file, 'r') as f:
-                json.load(f)  # Try to load the JSON to ensure it's valid
-        except (FileNotFoundError, json.JSONDecodeError):
-            # If file doesn't exist or JSON is invalid, initialize file with an empty list
-            with open(self.log_file, 'w') as f:
-                json.dump([], f)
