@@ -59,13 +59,12 @@ class MockCompletions(Completions):
 
 
 class MockChat(Chat):
-    def __init__(self, client, log_file):
+    def __init__(self, client):
         super().__init__(client)
-        self.log_file = log_file
 
     @cached_property
     def completions(self) -> Completions:
-        return MockCompletions(self._client, self.log_file)
+        return MockCompletions(self._client)
 
 
 class TailorAI(OpenAI):
