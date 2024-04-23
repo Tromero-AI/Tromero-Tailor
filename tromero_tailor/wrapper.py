@@ -30,7 +30,10 @@ class MockCompletions(Completions):
         post_data(data, self._client.tromero_key)
 
     def check_model(self, model):
-        models = self._client.models.list()
+        try:
+            models = self._client.models.list()
+        except:
+            return False
         model_names = [m.id for m in models]
         return model in model_names
     
