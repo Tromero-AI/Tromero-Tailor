@@ -39,6 +39,7 @@ class MockCompletions(Completions):
     
     def create(self, *args, **kwargs):
         input = {"model": kwargs['model'], "messages": kwargs['messages']}
+        tags = kwargs.get('tags', [])
         formatted_kwargs = {k: v for k, v in kwargs.items() if k not in ['model', 'messages']}
         if self.check_model(kwargs['model']):
             res = Completions.create(self, *args, **kwargs)  
@@ -51,7 +52,8 @@ class MockCompletions(Completions):
                                     "kwargs": formatted_kwargs,
                                     "creation_time": str(datetime.datetime.now().isoformat()),
                                     "usage": usage,
-                                        })
+                                    "tags": tags
+                                    })
         else:
             messages = kwargs['messages']
             res = tromero_model_create(kwargs['model'], messages, self._client.tromero_key)

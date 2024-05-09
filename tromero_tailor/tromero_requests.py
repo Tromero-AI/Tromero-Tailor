@@ -1,7 +1,7 @@
 import requests
 
 data_url = "https://midyear-grid-402910.lm.r.appspot.com/tailor/v1/data"
-models_url = "http://87.120.209.240:5000/generate"
+models_url = "http://35.246.163.71:5000/generate"
 
 def post_data(data, auth_token):
     headers = {
@@ -18,7 +18,7 @@ def post_data(data, auth_token):
 
 def tromero_model_create(model, messages, tromero_key):
     headers = {
-        'Authorization': f'Bearer {tromero_key}',
+        'Authorization': tromero_key,
         'Content-Type': 'application/json'
     }
 
