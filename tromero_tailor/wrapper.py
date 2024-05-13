@@ -56,9 +56,10 @@ class MockCompletions(Completions):
                                     })
         else:
             messages = kwargs['messages']
-            res = tromero_model_create(kwargs['model'], messages, self._client.tromero_key)
+            res = tromero_model_create(kwargs['model'], messages, self._client.tromero_key, self._client.self_hosted)
             # check if res has field 'generated_text'
             if 'generated_text' in res:
+                print("here")
                 res = mock_openai_format(res['generated_text'])
         return res
 
@@ -74,8 +75,9 @@ class MockChat(Chat):
 
 class TailorAI(OpenAI):
     chat: MockChat
-    def __init__(self, api_key, tromero_key):
+    def __init__(self, api_key, tromero_key, self_hosted=False):
         super().__init__(api_key=api_key)
         self.current_prompt = []
         self.chat = MockChat(self)
         self.tromero_key = tromero_key
+        self.self_hosted = self_hosted
