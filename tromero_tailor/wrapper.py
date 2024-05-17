@@ -40,9 +40,10 @@ class MockCompletions(Completions):
     def create(self, *args, **kwargs):
         input = {"model": kwargs['model'], "messages": kwargs['messages']}
         tags = kwargs.get('tags', [])
-        formatted_kwargs = {k: v for k, v in kwargs.items() if k not in ['model', 'messages']}
+        formatted_kwargs = {k: v for k, v in kwargs.items() if k not in ['model', 'messages', 'tags']}
+        openai_kwargs = {k: v for k, v in kwargs.items() if k not in ['tags']}
         if self.check_model(kwargs['model']):
-            res = Completions.create(self, *args, **kwargs)  
+            res = Completions.create(self, *args, **openai_kwargs)  
             if hasattr(res, 'choices'):
                 usage = res.usage.model_dump()
                 for choice in res.choices:
@@ -56,10 +57,9 @@ class MockCompletions(Completions):
                                     })
         else:
             messages = kwargs['messages']
-            res = tromero_model_create(kwargs['model'], messages, self._client.tromero_key, self._client.self_hosted)
+            res = tromero_model_create(kwargs['model'], messages, self._client.tromero_key, formatted_kwargs, self._client.self_hosted)
             # check if res has field 'generated_text'
             if 'generated_text' in res:
-                print("here")
                 res = mock_openai_format(res['generated_text'])
         return res
 
