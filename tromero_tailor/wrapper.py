@@ -6,10 +6,10 @@ from openai.resources.chat.completions import (
 )
 from openai._compat import cached_property
 import datetime
-from .tromero_requests import post_data, tromero_model_create
+from .tromero_requests import post_data, tromero_model_create, get_model_url
 from .tromero_utils import mock_openai_format
 
-    
+
 
 class MockCompletions(Completions):
     def __init__(self, client):
@@ -29,6 +29,41 @@ class MockCompletions(Completions):
     def _save_data(self, data):
         post_data(data, self._client.tromero_key)
 
+    def _format_kwargs(self, kwargs):
+        keys_to_keep = [
+            "best_of", "decoder_input_details", "details", "do_sample", 
+            "max_new_tokens", "ignore_eos_token", "repetition_penalty", 
+            "return_full_outcome", "seed", "stop", "temperature", "top_k", 
+            "top_p", "truncate", "typical_p", "watermark", "schema", 
+            "adapter_id", "adapter_source", "merged_adapters"
+        ]
+        print("///////////////////////////")
+        print(kwargs)
+        parameters = {key: kwargs[key] for key in keys_to_keep if key in kwargs}
+        print(parameters)
+        print("///////////////////////////")
+        return {key: kwargs[key] for key in keys_to_keep if key in kwargs}
+
+
+    def _format_messages(self, messages):
+        system_prompt = ""
+        num_prompts = 0
+        for message in messages:
+            if message['role'] == "system":
+                system_prompt += message['content'] + " "
+                num_prompts += 1
+            else:
+                break
+        if num_prompts <= 1:
+            return messages
+
+        messages = [{"role": "system", "content": system_prompt}] + messages[num_prompts:]
+        print("Warning: Multiple system prompts will be combined into one prompt when saving data or calling custom models.")
+        return messages
+    
+    def _tags_to_string(self, tags):
+        return ",".join(tags)
+
     def check_model(self, model):
         try:
             models = self._client.models.list()
@@ -38,9 +73,11 @@ class MockCompletions(Completions):
         return model in model_names
     
     def create(self, *args, **kwargs):
-        input = {"model": kwargs['model'], "messages": kwargs['messages']}
+        messages = kwargs['messages']
+        formatted_messages =  self._format_messages(messages)
+        model = kwargs['model']
         tags = kwargs.get('tags', [])
-        formatted_kwargs = {k: v for k, v in kwargs.items() if k not in ['model', 'messages', 'tags']}
+        formatted_kwargs = self._format_kwargs(kwargs)
         openai_kwargs = {k: v for k, v in kwargs.items() if k not in ['tags']}
         if self.check_model(kwargs['model']):
             res = Completions.create(self, *args, **openai_kwargs)  
@@ -48,19 +85,30 @@ class MockCompletions(Completions):
                 usage = res.usage.model_dump()
                 for choice in res.choices:
                     formatted_choice = self._choice_to_dict(choice)
-                    self._save_data({"messages": input['messages'] + [formatted_choice['message']],
-                                    "model": input['model'],
+                    self._save_data({"messages": formatted_messages + [formatted_choice['message']],
+                                    "model": model,
                                     "kwargs": formatted_kwargs,
                                     "creation_time": str(datetime.datetime.now().isoformat()),
                                     "usage": usage,
-                                    "tags": tags
+                                    "tags": self._tags_to_string(tags)
                                     })
         else:
-            messages = kwargs['messages']
-            res = tromero_model_create(kwargs['model'], messages, self._client.tromero_key, formatted_kwargs, self._client.self_hosted)
+            model_name = model
+            if model_name not in self._client.model_urls:
+                url = get_model_url(model_name, self._client.tromero_key)
+                self._client.model_urls[model_name] = url
+            res = tromero_model_create(model_name, self._client.model_urls[model_name], formatted_messages, self._client.tromero_key, parameters=formatted_kwargs)
             # check if res has field 'generated_text'
             if 'generated_text' in res:
-                res = mock_openai_format(res['generated_text'])
+                generated_text = res['generated_text']
+                res = mock_openai_format(generated_text)
+                
+                self._save_data({"messages": formatted_messages + [{"role": "assistant", "content": generated_text}],
+                                    "model": model_name,
+                                    "kwargs": formatted_kwargs,
+                                    "creation_time": str(datetime.datetime.now().isoformat()),
+                                    "tags": self._tags_to_string(tags + ['custom', model_name])
+                                    })
         return res
 
 
@@ -75,9 +123,9 @@ class MockChat(Chat):
 
 class TailorAI(OpenAI):
     chat: MockChat
-    def __init__(self, api_key, tromero_key, self_hosted=False):
+    def __init__(self, api_key, tromero_key):
         super().__init__(api_key=api_key)
         self.current_prompt = []
-        self.chat = MockChat(self)
+        self.model_urls = {}
         self.tromero_key = tromero_key
-        self.self_hosted = self_hosted
+        self.chat = MockChat(self)
