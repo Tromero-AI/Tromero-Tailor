@@ -96,26 +96,6 @@ response = client.chat.completions.create(
     stream=True
 )
 ```
-Certainly! Below, I'll integrate the details about how to handle streaming responses in the Tromero Tailor AI documentation. This will cover enabling streaming and accessing the streamed data as it arrives, highlighting the similarity to OpenAI's implementation for ease of use by those familiar with the OpenAI API.
-Streaming Responses
-
-Tromero Tailor AI supports streaming responses, which allows you to receive and process data incrementally as it's generated. This is particularly useful for handling large datasets or real-time data processing where immediate response is crucial.
-Enabling Streaming
-
-To enable streaming in your API calls, simply pass the parameter stream=True in your request. This tells the API to return the response incrementally, rather than waiting for the complete response to be ready.
-
-Here's an example of how to initiate a streaming request:
-
-
-```python
-response = client.chat.completions.create(
-    model="gpt-4-turbo-preview",
-    messages=[
-        {"role": "user", "content": "Please describe the streaming process."},
-    ],
-    stream=True
-)
-```
 
 Once you have initiated a streaming request, you can process the response as it arrives. Each chunk of the response will contain part of the data, and you can handle it within a loop. This is similar to how streaming is handled in the OpenAI API, making it familiar for users transitioning or using both services.
 
