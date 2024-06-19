@@ -1,10 +1,11 @@
 import requests
 import json
-from .tromero_utils import StreamResponse
+from .tromero_utils import mock_openai_format_stream
+import re
+import asyncio
+import time
 
 data_url = "https://midyear-grid-402910.lm.r.appspot.com/tailor/v1/data"
-models_url = "http://35.246.163.71:5000/generate"
-self_hosted_models_url = "https://midyear-grid-402910.lm.r.appspot.com/tailor/v1/generate"
 base_url = "https://midyear-grid-402910.lm.r.appspot.com/tailor/v1"
 
 def post_data(data, auth_token):
@@ -49,6 +50,32 @@ def get_model_url(model_name, auth_token):
         print(f"error: {e}")
         return {'error': f'An error occurred: {e}', 'status_code': response.status_code if 'response' in locals() else 'N/A'}
     
+class StreamResponse:
+    def __init__(self, response):
+        self.response = response
+
+    def __iter__(self):
+        try:
+            last_chunk = None
+            for chunk in self.response.iter_content(chunk_size=10000000):
+                # chunk_dict = json.loads(chunk)
+                chunk = chunk.decode('utf-8')
+                json_str = chunk[5:]
+                last_chunk = json_str
+                pattern = r'\"token\":({.*?})'
+                match = re.search(pattern, json_str)   
+                if match:
+                    json_str = match.group(1)
+                else:
+                    break
+                chunk_dict = json.loads(json_str)
+                
+                formatted_chunk = mock_openai_format_stream(chunk_dict['text'])
+                yield formatted_chunk
+        except Exception as e:
+            print(f"Error: {e}")
+            return
+    
 def tromero_model_create_stream(model, model_url, messages, tromero_key, parameters={}):
     headers = {'Content-Type': 'application/json'}
     data = {
@@ -59,23 +86,9 @@ def tromero_model_create_stream(model, model_url, messages, tromero_key, paramet
     headers['X-API-KEY'] = tromero_key
     try:
         response = requests.post(model_url + "/generate_stream", json=data, headers=headers, stream=True)
-        return StreamResponse(response)
-
-        # Stream the response back to the client
-        def generate():
-            try:
-                last_chunk = None
-                for chunk in response.iter_content(chunk_size=1024):
-                    if chunk:
-                        last_chunk = chunk
-                        yield chunk
-            except Exception as e:
-                print("Error streaming response:", e, flush=True)
-                raise e
-
-        return generate()
+        return StreamResponse(response), None
     except Exception as e:
-        return {'error': f'An error occurred: {e}', 'status_code': response.status_code if 'response' in locals() else 'N/A'}
+        return None, {'error': f'An error occurred: {e}', 'status_code': response.status_code if 'response' in locals() else 'N/A'}
 
 
 
