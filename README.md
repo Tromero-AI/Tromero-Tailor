@@ -104,3 +104,22 @@ Here’s how you can access and process each chunk of the streamed response:
 for chunk in response:
     chunk_message = chunk.choices[0].delta.content
 ```
+
+#### Fallback Models
+
+Tromero Tailor AI supports the specification of fallback models to ensure robustness and continuity of service, even when your primary model might encounter issues. You can configure a fallback model, which can be either a Tromero-hosted model or an OpenAI model, to be used in case the primary model fails.
+
+##### Configuring a Fallback Model
+
+To set up a fallback model, you simply specify the fallback_model parameter in your API calls. This parameter allows you to define an alternative model that the system should switch to in the event that the primary model fails to generate a response. The fallback model can be any other model that you have access to, whether selfhosted, hosted by Tromero or available through OpenAI.
+
+Here’s an example of how to specify a fallback model in your API calls:
+```python 
+response = client.chat.completions.create(
+    model="your-primary-model-name",
+    fallback_model="gpt-4o"  # Fallback model
+    messages=[
+        {"role": "user", "content": "Please provide details about our new product."},
+    ],
+)
+```
