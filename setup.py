@@ -30,7 +30,7 @@ setup(
         "openai==1.16.1",
         "pydantic==2.6.4",
         "pydantic_core==2.16.3",
-        "requests==2.31.0",
+        "requests==2.32.2",
         "setuptools==69.2.0",
         "sniffio==1.3.1",
         "tqdm==4.66.2",
