@@ -29,7 +29,7 @@ rfc3986==2.0.0
 rich==13.7.1
 setuptools==69.2.0
 sniffio==1.3.1
-tqdm==4.66.2
+tqdm==4.66.3
 -e git+ssh://git@github.com/proofoftraining/Tromero-Tailor.git@c0fbc2bc5d46546f246358b815e7e7e61566c38b#egg=tromero
 -e git+ssh://git@github.com/proofoftraining/Tromero-Tailor.git@c0fbc2bc5d46546f246358b815e7e7e61566c38b#egg=tromero_tailor
 twine==5.0.0

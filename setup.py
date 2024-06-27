@@ -33,7 +33,7 @@ setup(
         "requests==2.32.2",
         "setuptools==69.2.0",
         "sniffio==1.3.1",
-        "tqdm==4.66.2",
+        "tqdm==4.66.3",
         "typing_extensions==4.10.0",
         "urllib3==2.2.1",
     ],
