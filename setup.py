@@ -35,7 +35,7 @@ setup(
         "sniffio==1.3.1",
         "tqdm==4.66.2",
         "typing_extensions==4.10.0",
-        "urllib3==2.2.1",
+        "urllib3==2.2.2",
     ],
     python_requires='>=3.6',  # Specify the minimum version of Python required
 )

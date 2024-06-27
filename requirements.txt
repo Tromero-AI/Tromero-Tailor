@@ -34,6 +34,6 @@ tqdm==4.66.2
 -e git+ssh://git@github.com/proofoftraining/Tromero-Tailor.git@c0fbc2bc5d46546f246358b815e7e7e61566c38b#egg=tromero_tailor
 twine==5.0.0
 typing_extensions==4.10.0
-urllib3==2.2.1
+urllib3==2.2.2
 wheel==0.43.0
 zipp==3.18.1
