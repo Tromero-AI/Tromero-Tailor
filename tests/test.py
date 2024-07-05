@@ -1,12 +1,12 @@
 import unittest
 from unittest.mock import patch, MagicMock
 import datetime
-from tromero_tailor import TailorAI
+from tromero_tailor import TailorAI, AsyncTailorAI
 from tromero_tailor.wrapper import MockCompletions
-from unittest.mock import patch, MagicMock, mock_open
-
+from tromero_tailor.async_wrapper import AsyncMockCompletions
 from pydantic import BaseModel
 from typing import List, Literal, Optional
+import asyncio
 
 class Message(BaseModel):
     content: str
@@ -34,12 +34,6 @@ class ChatCompletion(BaseModel):
 class TestModel:
     def __init__(self, id):
         self.id = id
-        
-import unittest
-from unittest.mock import patch
-from tromero_tailor import TailorAI
-
-# Assuming the classes are defined as you provided above
 
 def create_chat_completion():
     return ChatCompletion(
@@ -70,7 +64,7 @@ class TestCreateChatCompletion(unittest.TestCase):
         mock_post.return_value = None
 
         client = TailorAI(api_key="fake_api_key", tromero_key="fake_tromero_key")
-        result = client.chat.completions.create(model="valid_model", messages=["Hello, world!"])
+        result = client.chat.completions.create(model="valid_model", messages=[{"content": "Hello, world!", "role": "user"}])
         
         # Assertions to verify behavior
         self.assertIsNotNone(result.choices)
@@ -95,15 +89,51 @@ class TestCreateChatCompletion(unittest.TestCase):
         mock_post.return_value = None
 
         client = TailorAI(api_key="fake_api_key", tromero_key="fake_tromero_key")
-        result = client.chat.completions.create(model="valid_model", messages=["Hello, world!"])
+        result = client.chat.completions.create(model="valid_model", messages=[{"content": "Hello, world!", "role": "user"}])
         
         self.assertIsInstance(result, ChatCompletion)
         self.assertEqual(len(result.choices), 0)
         mock_post.assert_not_called()
 
-# Run the test
+class TestCreateChatCompletionAsync(unittest.IsolatedAsyncioTestCase):
+    async def asyncSetUp(self):
+        self.client = AsyncTailorAI(api_key="fake_api_key", tromero_key="fake_tromero_key")
+
+    @patch('openai.resources.chat.completions.AsyncCompletions.create', autospec=True)
+    @patch('openai.resources.models.AsyncModels.list', autospec=True)
+    @patch('tromero_tailor.async_wrapper.post_data', autospec=True)
+    async def test_create_with_openai_model_async(self, mock_post, mock_list_models, mock_create):
+        mock_create.return_value = create_chat_completion()
+        mock_list_models.return_value = [TestModel("valid_model")]
+        mock_post.return_value = None
+
+        result = await self.client.chat.completions.create(model="valid_model", messages=[{"content": "Hello, world!", "role": "user"}])
+        
+        self.assertIsNotNone(result.choices)
+        self.assertEqual(result.choices[0].message.content, "Test response")
+        mock_post.assert_called()
+
+    @patch('openai.resources.chat.completions.AsyncCompletions.create', autospec=True)
+    @patch('openai.resources.models.AsyncModels.list', autospec=True)
+    @patch('tromero_tailor.async_wrapper.post_data', autospec=True)
+    async def test_create_with_no_choices_returned_async(self, mock_post, mock_list_models, mock_create):
+        mock_create.return_value = ChatCompletion(
+            id="5678efgh",
+            choices=[],
+            created=1701070800,
+            model="gpt-4",
+            object="chat.completion",
+            system_fingerprint="example_fingerprint",
+            usage=CompletionUsage(tokens=50)
+        )
+        mock_list_models.return_value = [TestModel("valid_model")]
+        mock_post.return_value = None
+
+        result = await self.client.chat.completions.create(model="valid_model", messages=[{"content": "Hello, world!", "role": "user"}])
+        
+        self.assertIsInstance(result, ChatCompletion)
+        self.assertEqual(len(result.choices), 0)
+        mock_post.assert_not_called()
+
 if __name__ == '__main__':
     unittest.main()
-
-
-
