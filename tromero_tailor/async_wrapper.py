@@ -41,7 +41,9 @@ class AsyncMockCompletions(AsyncCompletions, MockCompletions):
         except Exception as e:
             print(f"Error checking model: {e}")
             return False
-        model_names = [m.id for m in models]
+        model_names = []
+        async for m in models:
+            model_names.append(m.id)
         return model in model_names
     
     async def create(self, *args, **kwargs):
