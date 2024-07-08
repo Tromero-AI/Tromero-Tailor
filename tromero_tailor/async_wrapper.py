@@ -36,14 +36,14 @@ class AsyncMockCompletions(AsyncCompletions, MockCompletions):
                 await self._save_data(init_save_data)
 
     async def check_model(self, model):
+        models = self._client.models.list()
+        model_names = []
         try:
-            models = self._client.models.list()
+            async for m in models:
+                model_names.append(m.id)
         except Exception as e:
             print(f"Error checking model: {e}")
             return False
-        model_names = []
-        async for m in models:
-            model_names.append(m.id)
         return model in model_names
     
     async def create(self, *args, **kwargs):
