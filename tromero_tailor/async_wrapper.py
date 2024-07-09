@@ -47,7 +47,6 @@ class AsyncMockCompletions(AsyncCompletions, MockCompletions):
         return model in model_names
     
     async def create(self, *args, **kwargs):
-        print("Creating completion", flush=True)
         messages = kwargs['messages']
         formatted_messages = self._format_messages(messages)
         model = kwargs['model']
