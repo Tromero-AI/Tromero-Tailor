@@ -133,7 +133,9 @@ class MockCompletions(Completions):
                 # check if res has field 'generated_text'
                 if 'generated_text' in res:
                     generated_text = res['generated_text']
-                    res = mock_openai_format(generated_text)
+                    usage = res['usage']
+                    res = mock_openai_format(generated_text, usage)
+                    print("res", res)
 
         if hasattr(res, 'choices'):
             for choice in res.choices:
@@ -144,8 +146,8 @@ class MockCompletions(Completions):
                                 "creation_time": str(datetime.datetime.now().isoformat()),
                                 "tags": self._tags_to_string(tags)
                                 }
-                if hasattr(res, 'usage'):
-                    save_data['usage'] = res.usage.model_dump()
+                # if hasattr(res, 'usage'):
+                #     save_data['usage'] = res.usage.model_dump()
                 self._save_data(save_data)
         elif stream:
             init_save_data = {"messages": formatted_messages,

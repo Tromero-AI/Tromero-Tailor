@@ -62,15 +62,8 @@ class StreamResponse:
                 chunk = chunk.decode('utf-8')
                 json_str = chunk[5:]
                 last_chunk = json_str
-                pattern = r'\"token\":({.*?})'
-                match = re.search(pattern, json_str)   
-                if match:
-                    json_str = match.group(1)
-                else:
-                    break
                 chunk_dict = json.loads(json_str)
-                
-                formatted_chunk = mock_openai_format_stream(chunk_dict['text'])
+                formatted_chunk = mock_openai_format_stream(chunk_dict['token']['text'])
                 yield formatted_chunk
         except Exception as e:
             print(f"Error: {e}")
