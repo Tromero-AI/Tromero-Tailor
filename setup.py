@@ -20,7 +20,7 @@ setup(
     install_requires=[
         "annotated-types==0.6.0",
         "anyio==4.3.0",
-        "certifi==2024.2.2",
+        "certifi==2024.7.4",
         "charset-normalizer==3.3.2",
         "distro==1.9.0",
         "h11==0.14.0",
