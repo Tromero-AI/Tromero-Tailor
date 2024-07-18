@@ -5,7 +5,7 @@
 To install Tromero Tailor AI, you can use pip.
 
 ```
-pip install tromero_tailor
+pip install tromero
 ```
 
 ## Getting Started
@@ -17,7 +17,7 @@ Ensure you have set up both your OpenAi key and your Tromero key. You can follow
 First, import the TailorAI class from the AITailor package:
 
 ```python
-from tromero_tailor import TailorAI
+from tromero import TailorAI
 ```
 
 ### Initializing the Client
@@ -25,7 +25,7 @@ from tromero_tailor import TailorAI
 Initialize the TailorAI client using your API keys, which should be stored securely and preferably as environment variables:
 
 ```python
-client = TailorAI(api_key="your-openai-key", tromero_key="your-tromero-key")
+client = TailorAI(api_key="your-openai-key", tromero_key="your-tromero-key", save_data=True)
 ```
 
 ### Usage
@@ -123,3 +123,26 @@ response = client.chat.completions.create(
     ],
 )
 ```
+
+### Saving Data for Fine-Tuning
+
+To save data for future fine-tuning with Tromero, you must set save_data=True when initializing the TailorAI client. When save_data is true, Tromero will handle the formatting and saving of data automatically. Here’s how to initialize the client with data saving enabled:
+
+```python 
+client = TailorAI(api_key="your-openai-key", tromero_key="your-tromero-key", save_data=True)
+```
+
+#### Using Tags for Data Management
+Tags help you sort and separate data when it comes to fine-tuning. By setting tags, you can easily manage and categorize the data collected during your interactions. You can pass tags in the create call as shown below:
+
+```python
+response = client.chat.completions.create(
+    model="your-primary-model-name",
+    fallback_model="gpt-4o",  # Fallback model
+    messages=[
+        {"role": "user", "content": "Please provide details about our new product."},
+    ],
+    tags=["super_cool_model", "version1"]
+)
+```
+By utilizing tags, you can ensure that your data is organized effectively, making the fine-tuning process more efficient and streamlined.

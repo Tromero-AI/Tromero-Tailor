@@ -186,7 +186,7 @@ class MockChat(Chat):
 
 class TailorAI(OpenAI):
     chat: MockChat
-    def __init__(self, api_key, tromero_key, save_data=True):
+    def __init__(self, tromero_key, api_key="", save_data=False):
         super().__init__(api_key=api_key)
         self.current_prompt = []
         self.model_urls = {}
