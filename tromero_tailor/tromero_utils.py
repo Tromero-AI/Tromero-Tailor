@@ -9,13 +9,20 @@ class Choice:
     def __init__(self, message):
         self.message = Message(message)
 
-class Response:
-    def __init__(self, choices):
-        self.choices = choices
+class Usage:
+    def __init__(self, usage):
+        self.completion_tokens = usage['completion_tokens']
 
-def mock_openai_format(messages):
+class Response:
+    def __init__(self, choices, usage=None):
+        self.choices = choices
+        self.usage = usage
+        
+
+def mock_openai_format(messages, usage):
     choices = [Choice(messages)]  # Create a list of Choice objects
-    response = Response(choices)
+    usage = Usage(usage)
+    response = Response(choices, usage)
     return response
 
 class StreamChoice:
