@@ -1,8 +1,8 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="tromero_tailor",  # Replace with your package name
-    version="0.0.23",  # Replace with your package's version
+    name="tromero",  # Replace with your package name
+    version="0.0.1",  # Replace with your package's version
     author="Tromero",  # Replace with your name
     author_email="tadhg.amin@tromero.ai",  # Replace with your email address
     description="A short description of your package",  # Provide a short description
