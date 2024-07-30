@@ -32,7 +32,7 @@ class MockCompletions(Completions):
     def _format_kwargs(self, kwargs):
         keys_to_keep = [
             "best_of", "decoder_input_details", "details", "do_sample", 
-            "max_new_tokens", "ignore_eos_token", "repetition_penalty", 
+            "max_tokens", "ignore_eos_token", "repetition_penalty", 
             "return_full_outcome", "seed", "stop", "temperature", "top_k", 
             "top_p", "truncate", "typical_p", "watermark", "schema", 
             "adapter_id", "adapter_source", "merged_adapters", "response_format"
