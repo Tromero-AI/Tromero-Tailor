@@ -1,4 +1,4 @@
-# Tromero Tailor AI
+# Tromero AI
 
 ## Installation
 
@@ -146,3 +146,151 @@ response = client.chat.completions.create(
 )
 ```
 By utilizing tags, you can ensure that your data is organized effectively, making the fine-tuning process more efficient and streamlined.
+
+# Utility Functions/Cli
+
+In addition to the core functionalities, the Tromero package provides utility functions and a command-line interface (CLI) to manage your models and data on Tromero. These utilities are designed to help you seamlessly handle tasks such as training, deploying, and monitoring your models, as well as managing the data used for training.
+
+## The Functions
+### Models
+#### List all the models you have on tromero
+Python
+```python
+client.tromero_models.list()
+```
+CLI
+```bash
+tromero models list
+```
+#### Deploy model
+Python
+```python
+client.tromero_models.deploy("{model_name}")
+```
+CLI
+```bash
+tromero models deploy --model_name '{model_name}'  
+```
+#### Uneploy model
+Python
+```python
+client.tromero_models.undeploy("{model_name}")
+```
+CLI
+```bash
+tromero models undeploy --model_name '{model_name}'  
+```
+### Get model info
+Python
+```python
+client.tromero_models.get_info("{model_name}")
+```
+CLI
+```bash
+tromero models get_info --model_name '{model_name}'  
+```
+
+## Data 
+### List all the tags in your data
+Python
+```python
+client.data.get_tags()
+```
+CLI
+```bash
+tromero data get_tags 
+```
+### Upload data
+When uploading data to Tromero, you need to ensure that the file is in the correct format, specifically a JSONL file as specified on the Tromero website. The data will be tagged with the provided tags, making it easier to organize, sort, and train models later on. 
+
+Python
+```python
+client.data.upload('{file_path}', ['tag1', 'tag2'])
+```
+CLI
+```bash
+tromero data upload --file_path='{file_path}' --tags tag1,tag2 
+```
+Tromero also provides an option to enhance your data by generating synthetic versions for improved training. You can enable this feature by passing the make_synthetic_version argument.
+
+Python
+```python
+client.data.upload('{file_path}', ['tag1', 'tag2'], make_synthetic_version=True)
+```
+CLI
+```bash
+tromero data upload --file_path='{file_path}' --tags tag1,tag2 --make_synthetic_version True
+```
+## Datasets
+### Create Dataset From File
+A dataset in Tromero is a collection of grouped data that can be used for future training purposes. By organizing your data into datasets, you can easily manage and fine-tune models based on specific subsets of your data.
+
+Python
+```python
+client.datasets.create_from_file(
+    file_path='{file_path}', 
+    name='your-dataset-name', 
+    description='A brief description of your dataset', 
+    tags=['tag1', 'tag2']
+)
+```
+CLI
+```bash
+tromero datasets create_from_file --file_path='{file_path}' --name='your-dataset-name' --description='A brief description of your dataset' --tags tag1,tag2
+```
+In this example, {file_path} should be replaced with the path to your JSONL file. The name parameter assigns a name to your dataset, while the description provides a brief summary of the dataset's content or purpose. The tags help in categorizing and managing your data effectively.
+
+
+### Create Dataset From Tags
+You can create a dataset in Tromero by grouping together previously uploaded data that shares specific tags. This allows you to efficiently organize and manage your data based on common themes or characteristics, making it easier to use for future training.
+Python
+```python
+client.datasets.create_from_tags(
+    name='your-dataset-name', 
+    description='A brief description of your dataset', 
+    tags=['tag1', 'tag2']
+)
+```
+CLI
+```bash
+tromero datasets create_from_tags --name='your-dataset-name' --description='A brief description of your dataset' --tags tag1,tag2
+```
+
+### List your datasets
+```python
+client.datasets.list()
+```
+CLI
+```bash
+tromero datasets list
+```
+## Fine Tuning Jobs
+### Create a fine tuning job
+```python
+parameters = {
+    'epoch': 1,
+    'tags': ['tag1', 'tag2'],
+    'custom_dataset': 'your-dataset-name'
+}
+
+response = client.fine_tuning_jobs.create(
+    model_name='{model_name}',
+    base_model='llama-3.1-70B-instruct',
+    parameters=parameters
+)
+
+```
+CLI
+```bash
+tromero fine_tuning_jobs create --base_model llama-3.1-70B-instruct --model_name {model_name} --parameters '{"epoch": 1}'
+```
+
+### Get fine tuning job metrics
+```python
+response = client.fine_tuning_jobs.get_metrics("{model_name}")
+
+```
+CLI
+```bash
+tromero fine_tuning_jobs get_metrics --model_name {model_name}
+```

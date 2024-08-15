@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="tromero",  # Replace with your package name
-    version="0.0.1",  # Replace with your package's version
+    version="0.0.3",  # Replace with your package's version
     author="Tromero",  # Replace with your name
     author_email="tadhg.amin@tromero.ai",  # Replace with your email address
     description="A short description of your package",  # Provide a short description
@@ -36,6 +36,12 @@ setup(
         "tqdm==4.66.3",
         "typing_extensions==4.10.0",
         "urllib3==2.2.2",
+        "fire"
     ],
+     entry_points={
+        'console_scripts': [
+            'tromero=tromero_tailor.cli:main'
+        ]
+    },
     python_requires='>=3.6',  # Specify the minimum version of Python required
 )

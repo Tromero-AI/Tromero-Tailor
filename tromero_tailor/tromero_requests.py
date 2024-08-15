@@ -1,12 +1,8 @@
 import requests
 import json
 from .tromero_utils import mock_openai_format_stream
-import re
-import asyncio
-import time
+from .constants import DATA_URL, BASE_URL
 
-data_url = "https://midyear-grid-402910.lm.r.appspot.com/tailor/v1/data"
-base_url = "https://midyear-grid-402910.lm.r.appspot.com/tailor/v1"
 
 def post_data(data, auth_token):
     headers = {
@@ -14,7 +10,7 @@ def post_data(data, auth_token):
         'Content-Type': 'application/json'
     }
     try:
-        response = requests.post(data_url, json=data, headers=headers)
+        response = requests.post(DATA_URL, json=data, headers=headers)
         response.raise_for_status()  # Raises HTTPError for bad responses (4XX, 5XX)
         return response.json()  # Return the JSON response if request was successful
     except Exception as e:
@@ -43,7 +39,7 @@ def get_model_url(model_name, auth_token):
         'Content-Type': 'application/json'
     }
     try:
-        response = requests.get(f"{base_url}/model/{model_name}/url", headers=headers)
+        response = requests.get(f"{BASE_URL}/model/{model_name}/url", headers=headers)
         response.raise_for_status()  # Raises HTTPError for bad responses (4XX, 5XX)
         return response.json()['url'], response.json().get('base_model', False)  # Return the JSON response if request was successful
     except Exception as e:

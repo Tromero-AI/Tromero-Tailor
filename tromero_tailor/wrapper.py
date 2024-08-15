@@ -6,10 +6,16 @@ from openai.resources.chat.completions import (
 )
 from openai._compat import cached_property
 import datetime
-from .tromero_requests import post_data, tromero_model_create, get_model_url, tromero_model_create_stream
-from .tromero_utils import mock_openai_format
+from tromero_tailor.tromero_requests import post_data, tromero_model_create, get_model_url, tromero_model_create_stream
+from tromero_tailor.tromero_utils import mock_openai_format, tags_to_string
 import warnings
 import threading
+from tromero_tailor.fine_tuning import TromeroModels, TromeroData, FineTuningJob, Datasets
+from jsonschema import Draft7Validator
+from jsonschema.exceptions import SchemaError
+# import check_schema
+from jsonschema import Validator, FormatChecker
+from jsonschema import Draft7Validator
 
 
 class MockCompletions(Completions):
@@ -27,15 +33,37 @@ class MockCompletions(Completions):
     def _save_data(self, data):
         if self._client.save_data:
             threading.Thread(target=post_data, args=(data, self._client.tromero_key)).start()
-            
+
+    def validate_schema(self, schema):
+        try:
+        # Validate schema against the JSON Schema Draft 7
+            Draft7Validator.check_schema(schema)
+
+            # Additional common checks
+            if "properties" in schema:
+                for prop, details in schema["properties"].items():
+                    if "type" in details:
+                        valid_types = {"string", "number", "integer", "boolean", "array", "object"}
+                        if details["type"] not in valid_types:
+                            raise ValueError(f"Invalid type specified: {details['type']} in property '{prop}'")
+                    else:
+                        raise ValueError(f"No type specified for property '{prop}'")
+            else:
+                raise ValueError("No properties defined in the schema.")
+
+            print("Detailed validation passed.")
+        except (SchemaError, ValueError) as e:
+            raise SchemaError(f"Schema validation failed: {e}")
+
 
     def _format_kwargs(self, kwargs):
         keys_to_keep = [
             "best_of", "decoder_input_details", "details", "do_sample", 
             "max_new_tokens", "ignore_eos_token", "repetition_penalty", 
             "return_full_outcome", "seed", "stop", "temperature", "top_k", 
-            "top_p", "truncate", "typical_p", "watermark", "schema", 
-            "adapter_id", "adapter_source", "merged_adapters", "response_format"
+            "top_p", "truncate", "typical_p", "watermark", 
+            "adapter_id", "adapter_source", "merged_adapters", "response_format", 
+            "make_synthetic_version", "guided_schema", "guided_regex", "tools"
         ]
         invalid_key_found = False
         parameters = {}
@@ -135,7 +163,6 @@ class MockCompletions(Completions):
                     generated_text = res['generated_text']
                     usage = res['usage']
                     res = mock_openai_format(generated_text, usage)
-                    print("res", res)
 
         if hasattr(res, 'choices'):
             for choice in res.choices:
@@ -144,7 +171,7 @@ class MockCompletions(Completions):
                                 "model": model,
                                 "kwargs": send_kwargs,
                                 "creation_time": str(datetime.datetime.now().isoformat()),
-                                "tags": self._tags_to_string(tags)
+                                "tags": tags_to_string(tags)
                                 }
                 # if hasattr(res, 'usage'):
                 #     save_data['usage'] = res.usage.model_dump()
@@ -154,7 +181,7 @@ class MockCompletions(Completions):
                                 "model": model,
                                 "kwargs": send_kwargs,
                                 "creation_time": str(datetime.datetime.now().isoformat()),
-                                "tags": self._tags_to_string(tags)
+                                "tags": tags_to_string(tags)
                                 }
             fall_back_dict = {}
             if use_fallback and fallback_model:
@@ -194,3 +221,7 @@ class TailorAI(OpenAI):
         self.tromero_key = tromero_key
         self.chat = MockChat(self)
         self.save_data = save_data
+        self.tromero_models = TromeroModels(tromero_key)
+        self.fine_tuning_jobs = FineTuningJob(tromero_key)
+        self.data = TromeroData(tromero_key)
+        self.datasets = Datasets(tromero_key)
