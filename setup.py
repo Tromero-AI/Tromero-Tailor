@@ -2,9 +2,9 @@ from setuptools import setup, find_packages
 
 setup(
     name="tromero",  # Replace with your package name
-    version="0.0.3",  # Replace with your package's version
+    version="0.0.7",  # Replace with your package's version
     author="Tromero",  # Replace with your name
-    author_email="tadhg.amin@tromero.ai",  # Replace with your email address
+    author_email="admin@tromero.ai",  # Replace with your email address
     description="A short description of your package",  # Provide a short description
     long_description=open('README.md').read(),  # This will read your long description from README.md
     long_description_content_type='text/markdown',  # Indicates that the long description is in Markdown
@@ -36,11 +36,12 @@ setup(
         "tqdm==4.66.3",
         "typing_extensions==4.10.0",
         "urllib3==2.2.2",
-        "fire"
+        "fire",
+        "jsonschema",
     ],
      entry_points={
         'console_scripts': [
-            'tromero=tromero_tailor.cli:main'
+            'tromero=tromero.cli:main'
         ]
     },
     python_requires='>=3.6',  # Specify the minimum version of Python required

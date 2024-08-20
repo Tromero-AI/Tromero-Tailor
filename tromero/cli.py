@@ -1,6 +1,6 @@
 import fire
 
-from tromero_tailor.fine_tuning import TromeroModels, TromeroData, FineTuningJob, Datasets
+from tromero.fine_tuning import TromeroModels, TromeroData, FineTuningJob, Datasets
 import os 
 
 

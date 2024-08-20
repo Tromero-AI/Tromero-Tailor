@@ -17,7 +17,7 @@ Ensure you have set up both your OpenAi key and your Tromero key. You can follow
 First, import the TailorAI class from the AITailor package:
 
 ```python
-from tromero import TailorAI
+from tromero import Tromero
 ```
 
 ### Initializing the Client
@@ -25,7 +25,7 @@ from tromero import TailorAI
 Initialize the TailorAI client using your API keys, which should be stored securely and preferably as environment variables:
 
 ```python
-client = TailorAI(api_key="your-openai-key", tromero_key="your-tromero-key", save_data=True)
+client = TailorAI(api_key="your-openai-key", tromero_key="your-tromero-key", save_data_default=True)
 ```
 
 ### Usage
