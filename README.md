@@ -1,23 +1,26 @@
-# Tromero Tailor AI
+# Tromero Python API library
+
+The Tromero Python API Library is the official Python client for Tromero’s API platform, providing a convenient way for interacting with the REST APIs and enables easy integrations with Python 3.6+ applications with easy to use synchronous and asynchronous clients.
+
 
 ## Installation
 
-To install Tromero Tailor AI, you can use pip.
+To install Tromero Python Library from PyPI, simply run:
 
 ```
-pip install tromero
+pip install --upgrade tromero
 ```
 
-## Getting Started
+## Setting up API Key
 
-Ensure you have set up both your OpenAi key and your Tromero key. You can follow the instructions on our site to create a Tromero key
+:sparkles: You will need to create an account with Tromero.ai to obtain a Tromero API Key. :sparkles:
 
-### Importing the Package
+### Using the client
 
 First, import the TailorAI class from the AITailor package:
 
 ```python
-from tromero import TailorAI
+from tromero import Tromero
 ```
 
 ### Initializing the Client
@@ -25,12 +28,25 @@ from tromero import TailorAI
 Initialize the TailorAI client using your API keys, which should be stored securely and preferably as environment variables:
 
 ```python
-client = TailorAI(api_key="your-openai-key", tromero_key="your-tromero-key", save_data=True)
+client = TailorAI(tromero_key="your-tromero-key", save_data_default=True)
 ```
 
-### Usage
+If you have a preference over the location of the Models, you can specify that in the client
 
-This class is a drop-in replacement for openai, you should be able to use it as you did before. E.g:
+```python
+client = TailorAI(tromero_key="your-tromero-key", save_data_default=True, location="uk")
+```
+
+<Note> There are different model availability in different regions, so by selecting a region you may be limiting the choice of base models. The client parameter for location takes priority over the settings on the Tromero platform.
+</Note>
+
+If you require openai models you need to specify an openai key.
+
+```python
+client = TailorAI(api_key="your-openai-key", tromero_key="your-tromero-key", save_data_default=True)
+```
+
+### Usage – Python Client
 
 ```python
 response = client.chat.completions.create(
@@ -48,6 +64,7 @@ response = client.chat.completions.create(
     messages=[
         {"role": "user", "content": prompt},
     ],
+    save_data=False
     )
 ```
 #### Json formatting
@@ -56,27 +73,19 @@ Tromero Tailor supports JSON response formatting, allowing you to specify the ex
 To utilize JSON formatting, you need to define a schema that describes the structure of the JSON object. The schema should conform to the JSON Schema standard. Here is an example schema:
 ```python
 schema = {
-    'title': 'Person',
     'type': 'object',
     'properties': {
-        'name': {'title': 'Name', 'type': 'string', 'maxLength': 10},
-        'age': {'title': 'Age', 'type': 'integer'}
-    },
-    'required': ['name', 'age']
+        'name': {'type': 'string'},
+        'age': {'type': 'integer'}
+    }
 }
-```
-##### Specifying the Response Format in API Calls
-
-When making API calls where you expect the response to adhere to a specific format, you can specify the JSON schema using the response_format parameter. Here’s how you can pass this parameter in your API calls:
-```python
-response_format = {"type": "json_object", "schema": schema}
 
 response = client.chat.completions.create(
-    model="gpt-4-turbo-preview",
+    model="llama-3.1-70b-instruct",
     messages=[
         {"role": "user", "content": "Please provide your name and age."},
     ],
-    response_format=response_format
+    guided_schema=improved_schema
 )
 ```
 
@@ -146,3 +155,151 @@ response = client.chat.completions.create(
 )
 ```
 By utilizing tags, you can ensure that your data is organized effectively, making the fine-tuning process more efficient and streamlined.
+
+# Utility Functions/Cli
+
+In addition to the core functionalities, the Tromero package provides utility functions and a command-line interface (CLI) to manage your models and data on Tromero. These utilities are designed to help you seamlessly handle tasks such as training, deploying, and monitoring your models, as well as managing the data used for training.
+
+## The Functions
+### Models
+#### List all the models you have on tromero
+Python
+```python
+client.tromero_models.list()
+```
+CLI
+```bash
+tromero models list
+```
+#### Deploy model
+Python
+```python
+client.tromero_models.deploy("{model_name}")
+```
+CLI
+```bash
+tromero models deploy --model_name '{model_name}'  
+```
+#### Uneploy model
+Python
+```python
+client.tromero_models.undeploy("{model_name}")
+```
+CLI
+```bash
+tromero models undeploy --model_name '{model_name}'  
+```
+### Get model info
+Python
+```python
+client.tromero_models.get_info("{model_name}")
+```
+CLI
+```bash
+tromero models get_info --model_name '{model_name}'  
+```
+
+## Data 
+### List all the tags in your data
+Python
+```python
+client.data.get_tags()
+```
+CLI
+```bash
+tromero data get_tags 
+```
+### Upload data
+When uploading data to Tromero, you need to ensure that the file is in the correct format, specifically a JSONL file as specified on the Tromero website. The data will be tagged with the provided tags, making it easier to organize, sort, and train models later on. 
+
+Python
+```python
+client.data.upload('{file_path}', ['tag1', 'tag2'])
+```
+CLI
+```bash
+tromero data upload --file_path='{file_path}' --tags tag1,tag2 
+```
+Tromero also provides an option to enhance your data by generating synthetic versions for improved training. You can enable this feature by passing the make_synthetic_version argument.
+
+Python
+```python
+client.data.upload('{file_path}', ['tag1', 'tag2'], make_synthetic_version=True)
+```
+CLI
+```bash
+tromero data upload --file_path='{file_path}' --tags tag1,tag2 --make_synthetic_version True
+```
+## Datasets
+### Create Dataset From File
+A dataset in Tromero is a collection of grouped data that can be used for future training purposes. By organizing your data into datasets, you can easily manage and fine-tune models based on specific subsets of your data.
+
+Python
+```python
+client.datasets.create_from_file(
+    file_path='{file_path}', 
+    name='your-dataset-name', 
+    description='A brief description of your dataset', 
+    tags=['tag1', 'tag2']
+)
+```
+CLI
+```bash
+tromero datasets create_from_file --file_path='{file_path}' --name='your-dataset-name' --description='A brief description of your dataset' --tags tag1,tag2
+```
+In this example, {file_path} should be replaced with the path to your JSONL file. The name parameter assigns a name to your dataset, while the description provides a brief summary of the dataset's content or purpose. The tags help in categorizing and managing your data effectively.
+
+
+### Create Dataset From Tags
+You can create a dataset in Tromero by grouping together previously uploaded data that shares specific tags. This allows you to efficiently organize and manage your data based on common themes or characteristics, making it easier to use for future training.
+Python
+```python
+client.datasets.create_from_tags(
+    name='your-dataset-name', 
+    description='A brief description of your dataset', 
+    tags=['tag1', 'tag2']
+)
+```
+CLI
+```bash
+tromero datasets create_from_tags --name='your-dataset-name' --description='A brief description of your dataset' --tags tag1,tag2
+```
+
+### List your datasets
+```python
+client.datasets.list()
+```
+CLI
+```bash
+tromero datasets list
+```
+## Fine Tuning Jobs
+### Create a fine tuning job
+```python
+parameters = {
+    'epoch': 1,
+    'tags': ['tag1', 'tag2'],
+    'custom_dataset': 'your-dataset-name'
+}
+
+response = client.fine_tuning_jobs.create(
+    model_name='{model_name}',
+    base_model='llama-3.1-70B-instruct',
+    parameters=parameters
+)
+
+```
+CLI
+```bash
+tromero fine_tuning_jobs create --base_model llama-3.1-70B-instruct --model_name {model_name} --parameters '{"epoch": 1}'
+```
+
+### Get fine tuning job metrics
+```python
+response = client.fine_tuning_jobs.get_metrics("{model_name}")
+
+```
+CLI
+```bash
+tromero fine_tuning_jobs get_metrics --model_name {model_name}
+```

@@ -37,3 +37,4 @@ typing_extensions==4.10.0
 urllib3==2.2.2
 wheel==0.43.0
 zipp==3.19.1
+jsonschema
