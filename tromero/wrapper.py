@@ -144,7 +144,7 @@ class MockCompletions(Completions):
             send_kwargs = formatted_kwargs
             model_name = model
             if model_name not in self._client.model_urls:
-                url, base_model = get_model_url(model_name, self._client.tromero_key)
+                url, base_model = get_model_url(model_name, self._client.tromero_key, self._client.location_preference)
                 self._client.model_urls[model_name] = url
                 self._client.is_base_model[model_name] = base_model
             model_request_name = model_name if not self._client.is_base_model[model_name] else "NO_ADAPTER"
@@ -214,7 +214,7 @@ class MockChat(Chat):
 
 class Tromero(OpenAI):
     chat: MockChat
-    def __init__(self, tromero_key, api_key="", save_data_default=False):
+    def __init__(self, tromero_key, api_key="", save_data_default=False, location_preference=None):
         super().__init__(api_key=api_key)
         self.current_prompt = []
         self.model_urls = {}
@@ -226,3 +226,4 @@ class Tromero(OpenAI):
         self.fine_tuning_jobs = FineTuningJob(tromero_key)
         self.data = TromeroData(tromero_key)
         self.datasets = Datasets(tromero_key)
+        self.location_preference = location_preference

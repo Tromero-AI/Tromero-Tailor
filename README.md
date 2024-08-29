@@ -1,18 +1,21 @@
-# Tromero AI
+# Tromero Python API library
+
+The Tromero Python API Library is the official Python client for Tromero’s API platform, providing a convenient way for interacting with the REST APIs and enables easy integrations with Python 3.6+ applications with easy to use synchronous and asynchronous clients.
+
 
 ## Installation
 
-To install Tromero Tailor AI, you can use pip.
+To install Tromero Python Library from PyPI, simply run:
 
 ```
-pip install tromero
+pip install --upgrade tromero
 ```
 
-## Getting Started
+## Setting up API Key
 
-Ensure you have set up both your OpenAi key and your Tromero key. You can follow the instructions on our site to create a Tromero key
+:sparkles: You will need to create an account with Tromero.ai to obtain a Tromero API Key. :sparkles:
 
-### Importing the Package
+### Using the client
 
 First, import the TailorAI class from the AITailor package:
 
@@ -25,12 +28,25 @@ from tromero import Tromero
 Initialize the TailorAI client using your API keys, which should be stored securely and preferably as environment variables:
 
 ```python
+client = TailorAI(tromero_key="your-tromero-key", save_data_default=True)
+```
+
+If you have a preference over the location of the Models, you can specify that in the client
+
+```python
+client = TailorAI(tromero_key="your-tromero-key", save_data_default=True, location="uk")
+```
+
+<Note> There are different model availability in different regions, so by selecting a region you may be limiting the choice of base models. The client parameter for location takes priority over the settings on the Tromero platform.
+</Note>
+
+If you require openai models you need to specify an openai key.
+
+```python
 client = TailorAI(api_key="your-openai-key", tromero_key="your-tromero-key", save_data_default=True)
 ```
 
-### Usage
-
-This class is a drop-in replacement for openai, you should be able to use it as you did before. E.g:
+### Usage – Python Client
 
 ```python
 response = client.chat.completions.create(
@@ -48,6 +64,7 @@ response = client.chat.completions.create(
     messages=[
         {"role": "user", "content": prompt},
     ],
+    save_data=False
     )
 ```
 #### Json formatting
@@ -56,27 +73,19 @@ Tromero Tailor supports JSON response formatting, allowing you to specify the ex
 To utilize JSON formatting, you need to define a schema that describes the structure of the JSON object. The schema should conform to the JSON Schema standard. Here is an example schema:
 ```python
 schema = {
-    'title': 'Person',
     'type': 'object',
     'properties': {
-        'name': {'title': 'Name', 'type': 'string', 'maxLength': 10},
-        'age': {'title': 'Age', 'type': 'integer'}
-    },
-    'required': ['name', 'age']
+        'name': {'type': 'string'},
+        'age': {'type': 'integer'}
+    }
 }
-```
-##### Specifying the Response Format in API Calls
-
-When making API calls where you expect the response to adhere to a specific format, you can specify the JSON schema using the response_format parameter. Here’s how you can pass this parameter in your API calls:
-```python
-response_format = {"type": "json_object", "schema": schema}
 
 response = client.chat.completions.create(
-    model="gpt-4-turbo-preview",
+    model="llama-3.1-70b-instruct",
     messages=[
         {"role": "user", "content": "Please provide your name and age."},
     ],
-    response_format=response_format
+    guided_schema=improved_schema
 )
 ```
 

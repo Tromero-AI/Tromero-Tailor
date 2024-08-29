@@ -2,6 +2,18 @@ import requests
 import json
 from .tromero_utils import mock_openai_format_stream
 from .constants import DATA_URL, BASE_URL
+import traceback
+
+class TromeroError(Exception):
+    def __init__(self, message):
+        super().__init__(message)
+
+def raise_for_status(response):
+    # if status code does not start with 2, raise an error
+    if not str(response.status_code).startswith('2'):
+        json_response = response.json()
+        message = json_response.get('message', json_response.get('error', 'An error occurred'))
+        raise TromeroError(f"\033[95m{message}\033[0m")
 
 
 def post_data(data, auth_token):
@@ -11,40 +23,49 @@ def post_data(data, auth_token):
     }
     try:
         response = requests.post(DATA_URL, json=data, headers=headers)
-        response.raise_for_status()  # Raises HTTPError for bad responses (4XX, 5XX)
+        raise_for_status(response)  # Raises HTTPError for bad responses (4XX, 5XX)
         return response.json()  # Return the JSON response if request was successful
+    except TromeroError as e:
+        raise e
     except Exception as e:
-        return {'error': f'An error occurred: {e}', 'status_code': response.status_code if 'response' in locals() else 'N/A'}
+        raise TromeroError(f'An error occurred: {e}')
     
-
 def tromero_model_create(model, model_url, messages, tromero_key, parameters={}):
-    headers = {'Content-Type': 'application/json'}
-    data = {
-        "adapter_name": model,
-        "messages": messages,
-        "parameters": parameters
-    }
-    headers['X-API-KEY'] = tromero_key
     try:
+        headers = {'Content-Type': 'application/json'}
+        data = {
+            "adapter_name": model,
+            "messages": messages,
+            "parameters": parameters
+        }
+        headers['X-API-KEY'] = tromero_key
         response = requests.post(f"{model_url}/generate", json=data, headers=headers)
-        response.raise_for_status()  # Raises HTTPError for bad responses (4XX, 5XX)
+        raise_for_status(response)  # Raises HTTPError for bad responses (4XX, 5XX)
         return response.json()  # Return the JSON response if request was successful
+    except TromeroError as e:
+        raise e
     except Exception as e:
-        return {'error': f'An error occurred: {e}', 'status_code': response.status_code if 'response' in locals() else 'N/A'}
+        raise TromeroError(f'An error occurred: {e}')
     
 
-def get_model_url(model_name, auth_token):
+def get_model_url(model_name, auth_token, location_preference):
+    print(f"location_preference: {location_preference.lower()}")
     headers = {
         'X-API-KEY': auth_token,
         'Content-Type': 'application/json'
     }
+    if location_preference:
+        url = f"{BASE_URL}/model/{model_name}/url?location_preference={location_preference.lower()}" 
+    else:
+        url = f"{BASE_URL}/model/{model_name}/url"
     try:
-        response = requests.get(f"{BASE_URL}/model/{model_name}/url", headers=headers)
-        response.raise_for_status()  # Raises HTTPError for bad responses (4XX, 5XX)
+        response = requests.get(url, headers=headers)
+        raise_for_status(response)  # Raises HTTPError for bad responses (4XX, 5XX)
         return response.json()['url'], response.json().get('base_model', False)  # Return the JSON response if request was successful
+    except TromeroError as e:
+        raise e
     except Exception as e:
-        print(f"error: {e}")
-        return {'error': f'An error occurred: {e}', 'status_code': response.status_code if 'response' in locals() else 'N/A'}
+        raise TromeroError(f'An error occurred: {e}')
     
 class StreamResponse:
     def __init__(self, response):
@@ -76,8 +97,10 @@ def tromero_model_create_stream(model, model_url, messages, tromero_key, paramet
     try:
         response = requests.post(model_url + "/generate_stream", json=data, headers=headers, stream=True)
         return StreamResponse(response), None
+    except TromeroError as e:
+        raise e
     except Exception as e:
-        return None, {'error': f'An error occurred: {e}', 'status_code': response.status_code if 'response' in locals() else 'N/A'}
+        raise TromeroError(f'An error occurred: {e}')
 
 
 
