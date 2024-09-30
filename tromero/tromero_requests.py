@@ -49,7 +49,6 @@ def tromero_model_create(model, model_url, messages, tromero_key, parameters={})
     
 
 def get_model_url(model_name, auth_token, location_preference):
-    print(f"location_preference: {location_preference.lower()}")
     headers = {
         'X-API-KEY': auth_token,
         'Content-Type': 'application/json'
@@ -61,7 +60,7 @@ def get_model_url(model_name, auth_token, location_preference):
     try:
         response = requests.get(url, headers=headers)
         raise_for_status(response)  # Raises HTTPError for bad responses (4XX, 5XX)
-        return response.json()['url'], response.json().get('base_model', False)  # Return the JSON response if request was successful
+        return response.json()['url'], response.json().get('base_model', False), response.json().get('embedding_model', False)  
     except TromeroError as e:
         raise e
     except Exception as e:
@@ -101,6 +100,23 @@ def tromero_model_create_stream(model, model_url, messages, tromero_key, paramet
         raise e
     except Exception as e:
         raise TromeroError(f'An error occurred: {e}')
+
+def embedding_request(inputs, model, model_url, tromero_key):
+    headers = {'Content-Type': 'application/json'}
+    data = {
+        "inputs": inputs,
+        "model": model
+    }
+    headers['X-API-KEY'] = tromero_key
+    try:
+        response = requests.post(model_url + "/embed", json=data, headers=headers)
+        raise_for_status(response)  # Raises HTTPError for bad responses (4XX, 5XX)
+        return response.json()  # Return the JSON response if request was successful
+    except TromeroError as e:
+        raise e
+    except Exception as e:
+        raise TromeroError(f'An error occurred: {e}')
+
 
 
 

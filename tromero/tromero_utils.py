@@ -106,3 +106,11 @@ def validate_file_content(file_path):
     else:
         print("Validation encountered errors.")
         return False
+
+class EmbeddingObject:
+    def __init__(self, embedding):
+        self.embedding = embedding
+
+class EmbeddingResponse:
+    def __init__(self, embeddings):
+        self.data = list(EmbeddingObject(embedding) for embedding in embeddings)
